@@ -72,6 +72,10 @@ resource "aws_subnet" "private_us_east_1a" {
 #     Environment = var.app_environment
 #   }
 # }
+# resource "aws_route_table_association" "rta_private_us_east_1a" {
+#   subnet_id      = aws_subnet.private_us_east_1a.id
+#   route_table_id = aws_route_table.rt_private_us_east_1a.id
+# }
 
 resource "aws_route_table" "rt_public" {
   vpc_id = aws_vpc.vpc.id
@@ -86,12 +90,6 @@ resource "aws_route_table" "rt_public" {
     Environment = var.app_environment
   }
 }
-
-resource "aws_route_table_association" "rta_private_us_east_1a" {
-  subnet_id      = aws_subnet.private_us_east_1a.id
-  route_table_id = aws_route_table.rt_private_us_east_1a.id
-}
-
 resource "aws_route_table_association" "rta_public_us_east_1a" {
   subnet_id      = aws_subnet.public_us_east_1a.id
   route_table_id = aws_route_table.rt_public.id
