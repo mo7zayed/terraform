@@ -1,5 +1,5 @@
 # Intro
-Highly available architecture on AWS using Terraform, For learning purposes
+Simple architecture on AWS using Terraform.
 
 # Architecture
 ![Architecture](architecture.png)
