@@ -49,8 +49,8 @@ resource "aws_instance" "ec2-servers" {
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = false
   source_dest_check           = false
-  #   key_name                    = "mo7zayed-root-us-east-1"
-  user_data = file("scripts/aws-user-data.sh")
+  key_name                    = "mo7zayed-root-us-east-1"
+  user_data                   = file("scripts/aws-user-data.sh")
 
   # root disk
   root_block_device {
@@ -62,6 +62,61 @@ resource "aws_instance" "ec2-servers" {
 
   tags = {
     Name        = "${lower(var.app_name)}-${var.app_environment}-ec2-server"
+    Environment = var.app_environment
+  }
+}
+
+resource "aws_security_group" "bastion-server-sg" {
+  name        = "${lower(var.app_name)}-${var.app_environment}-bastion-server-sg"
+  description = "Allow incoming HTTP & SSH connections"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "${lower(var.app_name)}-${var.app_environment}-bastion-server-sg"
+    Environment = var.app_environment
+  }
+}
+resource "aws_instance" "bastion-server" {
+  ami                         = data.aws_ami.ubuntu-latest-ami.id
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.public_us_east_1a.id
+  vpc_security_group_ids      = [aws_security_group.bastion-server-sg.id]
+  associate_public_ip_address = true
+  source_dest_check           = false
+  key_name                    = "mo7zayed-root-us-east-1"
+  user_data                   = file("scripts/aws-user-data.sh")
+
+  # root disk
+  root_block_device {
+    volume_size           = var.linux_root_volume_size
+    volume_type           = var.linux_root_volume_type
+    delete_on_termination = true
+    encrypted             = false
+  }
+
+  tags = {
+    Name        = "${lower(var.app_name)}-${var.app_environment}-bastion-server"
     Environment = var.app_environment
   }
 }
