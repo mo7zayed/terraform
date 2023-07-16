@@ -6,12 +6,12 @@ variable "aws_region" {
 
 variable "app_name" {
   type    = string
-  default = "nginx" # Do NOT enter any spaces
+  default = "bookstack" # Do NOT enter any spaces
 }
 
 variable "app_environment" {
   type    = string
-  default = "development" # Dev, Test, Staging, Prod, etc
+  default = "dev" # Dev, Test, Staging, Prod, etc
 }
 
 variable "linux_instance_type" {
